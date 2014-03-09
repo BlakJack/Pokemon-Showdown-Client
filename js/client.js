@@ -13,17 +13,15 @@
 		window.nwWindow = gui.Window.get();
 	}
 
-	Config.version = '0.9.0';
+	Config.version = '0.9.2';
 	Config.origindomain = 'play.pokemonshowdown.com';
 
 	// `defaultserver` specifies the server to use when the domain name in the
 	// address bar is `Config.origindomain`.
 	Config.defaultserver = {
-		id: 'showdown',
-		host: 'sim.smogon.com',
-		port: 443,
-		httpport: 8000,
-		altport: 80,
+		id: 'ktn',
+		host: '192.184.93.98',
+		port: 8000,
 		registered: true
 	};
 	Config.sockjsprefix = '/showdown';
