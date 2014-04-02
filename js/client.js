@@ -411,6 +411,7 @@
 
 			// Simple connection: no cross-domain logic needed.
 			Config.server = Config.server || Config.defaultserver;
+			// Config.server.afd = true;
 			Storage.loadTeams();
 			this.trigger('init:loadprefs');
 			return this.connect();
@@ -469,6 +470,7 @@
 						};
 						// server config information
 						Config.server = data.server;
+						// Config.server.afd = true;
 						if (Config.server.registered) {
 							var $link = $('<link rel="stylesheet" ' +
 								'href="//play.pokemonshowdown.com/customcss.php?server=' +
@@ -1960,7 +1962,7 @@
 			} else {
 				buf += '<p>Register your account:</p>';
 			}
-			buf += '<p><label class="label">Username: <strong>' + (data.name || app.user.get('name')) + '</strong><input type="hidden" name="name" value="' + Tools.escapeHTML(data.name || app.user.get('name')) + '" /></label></p>';
+			buf += '<p><label class="label">Username: <strong>' + Tools.escapeHTML(data.name || app.user.get('name')) + '</strong><input type="hidden" name="name" value="' + Tools.escapeHTML(data.name || app.user.get('name')) + '" /></label></p>';
 			buf += '<p><label class="label">Password: <input class="textbox autofocus" type="password" name="password" /></label></p>';
 			buf += '<p><label class="label">Password (confirm): <input class="textbox" type="password" name="cpassword" /></label></p>';
 			buf += '<p><label class="label"><img src="' + Tools.resourcePrefix + 'sprites/bwani/pikachu.gif" /></label></p>';
