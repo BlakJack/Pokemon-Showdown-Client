@@ -3371,6 +3371,13 @@ function Battle(frame, logFrame, noPreload) {
 						actions += '' + poke.getName() + ' already has a substitute!';
 					}
 					break;
+				case 'skydrop':
+					if (kwargs.heavy) {
+						actions += '' + poke.getName() + ' is too heavy to be lifted!';
+					} else {
+						actions += "But it failed!";
+					}
+					break;
 				case 'unboost':
 					self.resultAnim(poke, 'Stat drop blocked', 'neutral', animDelay);
 					actions += "" + poke.getName() + "'s " + (args[3] ? args[3] + " was" : "stats were") + " not lowered!";
@@ -4444,6 +4451,12 @@ function Battle(frame, logFrame, noPreload) {
 				case 'gravity':
 					actions += "Gravity intensified!";
 					break;
+				case 'mudsport':
+					actions += "Electric's power was weakened!";
+					break;
+				case 'watersport':
+					actions += "Fire's power was weakened!";
+					break;
 				default:
 					actions += effect.name+" started!";
 					break;
@@ -4467,6 +4480,12 @@ function Battle(frame, logFrame, noPreload) {
 					break;
 				case 'gravity':
 					actions += 'Gravity returned to normal!';
+					break;
+				case 'mudsport':
+					actions += 'The effects of Mud Sport have faded.';
+					break;
+				case 'watersport':
+					actions += 'The effects of Water Sport have faded.';
 					break;
 				default:
 					actions += effect.name+" ended!";
@@ -4868,6 +4887,7 @@ function Battle(frame, logFrame, noPreload) {
 		case 'c':
 			name = args[1];
 			if (self.ignoreSpects && !self.getSide(name).battle) break;
+			if (window.app && app.ignore && app.ignore[toUserid(name)]) break;
 			args.shift();
 			args.shift();
 			var message = args.join('|');
