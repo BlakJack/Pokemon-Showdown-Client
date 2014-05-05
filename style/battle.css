@@ -304,6 +304,12 @@ color: white;
 .movemenu button.type-Ice:hover{
     background: #45b6b6 url(http://i.imgur.com/ee2HfDF.png);
 }
+.movemenu button.type-Fairy{
+background: #FFBAC7 url(http://i.imgur.com/ee2HfDF.png);
+}
+.movemenu button.type-Fairy:hover{
+background: #FF87C7 url(http://i.imgur.com/ee2HfDF.png);
+}
  
 .movemenu button.type-Fighting{
     background: #9d2721 url(http://i.imgur.com/ee2HfDF.png);
