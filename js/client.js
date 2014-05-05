@@ -19,8 +19,8 @@
 	// `defaultserver` specifies the server to use when the domain name in the
 	// address bar is `Config.origindomain`.
 	Config.defaultserver = {
-		id: 'ktn',
-		host: '192.184.93.98',
+		id: 'haywyre',
+		host: '107.161.17.175',
 		port: 8000,
 		registered: true
 	};
