@@ -810,7 +810,57 @@ top: 45px;
     font-family: Verdana, sans-serif;
     font-size: 10pt;
 }
+   
+    .backdrop:before{
+
+        display:block; 
+
+        content:""; 
+
+        background:url(http://i.imgur.com/QjLsolX.gif); 
+
+        background-size:cover; 
+
+        width:640px; 
+
+    height:360px}
+
+.backdrop{
+
+    width:640px; 
+
+    height:360px; 
+
+    position:absolute; 
+
+    top:0px; 
+
+    left:0px; 
+
+    overflow:hidden; 
+
+    background:-50px -90px; 
+
+    opacity:1 !important}
+
+.backdrop:after {
+
+display:block ; 
+
+content:""; 
+
+background:url(http://i.imgur.com/ALNRPPT.png); 
     
+position:absolute; 
+
+top:0; 
+
+left:0; 
+
+width:640px; 
+
+height:360px}
+
 
 .ps-room .battle-controls {
 top: 430px;
