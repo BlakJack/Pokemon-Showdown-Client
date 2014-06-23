@@ -1533,14 +1533,7 @@ div[class^='tournament-message-'], div[class*=' tournament-message-'] {
 	position: relative;
 	padding:  6px 4px 0 4px;
 }
-.movemenu button small {
-	color: #777777;
-}
-.movemenu button small.type {
-	padding-top: 3px;
-	float: left;
-	font-size: 7pt;
-}
+
 .movemenu button small.pp {
 	padding-top: 3px;
 	float: right;
@@ -2545,31 +2538,7 @@ License: GPLv2
 
 */
 
-.battle
-{
-	position: absolute;
-	text-align: left;
-	top: 9px;
-	left: -1px;
-	border: 1px solid #AAAAAA;
-	background: #CFD5DA;
-	width: 640px;
-	height: 360px;
-	overflow: hidden;
 
-	font-family: Verdana, sans-serif;
-	font-size: 10pt;
-}
-.backdrop
-{
-	width: 700px;
-	height: 500px;
-	position: absolute;
-	top: -90px;
-	left: -50px;
-	background: transparent url(//play.pokemonshowdown.com/fx/bg-beach.png) no-repeat scroll left top;
-	opacity: 0.6;
-}
 .battle a
 {
 	color: #2277FF;
@@ -3133,34 +3102,6 @@ License: GPLv2
 	display: none;
 	position: absolute;
 }
-.sidecondition-lightscreen
-{
-	background: #CCCC00;
-	border: 1px solid #AAAA00;
-	display: none;
-	position: absolute;
-}
-.sidecondition-safeguard
-{
-	background: #DD88DD;
-	border: 1px solid #AA66AA;
-	display: none;
-	position: absolute;
-}
-.sidecondition-mist
-{
-	background: #AACCFF;
-	border: 1px solid #5577CC;
-	display: none;
-	position: absolute;
-}
-.turnstatus-protect
-{
-	background: #DD88DD;
-	border: 1px solid #AA66AA;
-	display: none;
-	position: absolute;
-}
 .seeking
 {
 	display: block;
@@ -3375,97 +3316,6 @@ top: 45px;
     font-size: 10pt;
 }
     
-.backdrop {
-    width: 640px;
-    height: 360px;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    overflow: hidden;
-    background: -50px -90px;
-    opacity: 1 !important;
-}
-
-.backdrop:after{
-	display: block;
-	content: "";
-	background: url(http://i.imgur.com/zQ6bUvr.png);
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 640px;
-    height: 360px;
-}
-
-.ps-room .battle-controls {
-top: 430px;
-}
-
-.turn {
-    position: absolute;
-    top: -42px;
-    left: 270px !important;
-    width: 101px;
-    height: 17px;
-    font-size: 8pt;
-    font-weight: bold;
-    margin: 0px;
-    padding: 0px;
-    padding-top:35px;
-    border: 0;
-    border-radius: 0;
-    opacity: 1 !important;
-    background: url(http://i.imgur.com/Ng0wOlV.png);
-    text-align: center;
-    color: #FFF;
-}
-
-
-  
-  
-
-
-.rightbar {
-position: absolute;
-top: -60px;
-right: 0;
-height: 100px;
-width: 320px;
-background-color: rgba(255,255,255,0);
-border: 0px solid rgba(215,215,215,0.5);
-color: #777777;
-background-image: url(http://i.imgur.com/WEdUzyR.png);
-background-position: 0px -35px;
-}
-
-.rightbar .trainer {
-margin-top: 0px;
-text-align: right;
-}
-
-.rightbar .trainersprite{
-position: absolute;
-top: 5px;
-left: 40px;
-opacity: 1 !important;
-}
-
-.trainer strong {
-display: block;
-font-size: 8pt;
-overflow: hidden;
-padding-top: 45px;
-padding-right: 10px;
-color: #111;
-}
-  
-  
-.rightbar .trainer .teamicons {
-float:left;
-position: relative;
-top: -42px;
-left: 108px;
-}
 
 
 
@@ -3476,46 +3326,10 @@ left: 108px;
 
 
 
-.leftbar {
-position: absolute;
-top: -60px;
-left: 0;
-height: 100px;
-width: 320px;
-background-color: rgba(255,255,255,0);
-border: 0px solid rgba(215,215,215,0.5);
-color: #777777;
-background-image: url(http://i.imgur.com/Y68Rmc5.png);
-background-position: 0px -35px;
-}
 
-.leftbar .trainer {
-margin-top: 0px;
-text-align: left;
-}
 
-.leftbar .trainersprite{
-position: absolute;
-top: 5px;
-right: 40px;
-opacity: 1 !important;
-}
 
-.leftbar .trainer strong {
-display: block;
-font-size: 8pt;
-overflow: hidden;
-padding-top: 45px;
-padding-left: 10px;
-}
-  
-  
-.leftbar .trainer .teamicons {
-float:right;
-position: relative;
-top: -42px;
-right: 108px;
-}
+
 
 
 
@@ -3535,25 +3349,6 @@ right: 108px;
     text-align:center;
   }
   
-.sunweather, .sunnydayweather {
-background: url(http://i.imgur.com/zNp4BiP.jpg) no-repeat scroll left top;
-}
-
-.rainweather, .raindanceweather {
-background: url(http://i.imgur.com/xRbPLwC.jpg) no-repeat scroll left top;
-  }
-  
-.hailweather {
-background: url(http://i.imgur.com/NxZzwHi.gif) no-repeat scroll left top;
-  }
-
-.sandstormweather {
-background: url(http://i.imgur.com/PhAU4CK.jpg) no-repeat scroll left top;
-}
-
-.pseudoweather{
-background: url(http://i.imgur.com/diinudq.png) no-repeat scroll left top;
-}
     
 
 
@@ -3597,140 +3392,7 @@ color: white;
 /*margin:6px 15px 0 10px;*/
 }
 
-.movemenu button.type-Normal{
-    background: #8a8a59 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Normal:hover{
-    background: #79794e url(http://i.imgur.com/ee2HfDF.png);
-}
 
-.movemenu button.type-Fire{
-    background: #dd6610 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Fire:hover{
-    background: #b4530d url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Water{
-    background: #386ceb url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Water:hover{
-    background: #1753e3 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Electric{
-    background: #f0c108 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Electric:hover{
-    background: #c19b07 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Grass{
-    background: #5ca935 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Grass:hover{
-    background: #4a892b url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Ice{
-    background: #69c6c6 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Ice:hover{
-    background: #45b6b6 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Fighting{
-    background: #9d2721 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Fighting:hover{
-    background: #82211b url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Poison{
-    background: #803380 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Poison:hover{
-    background: #662966 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Ground{
-    background: #d4a82f url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Ground:hover{
-    background: #aa8623 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Flying{
-    background: #9180c4 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Flying:hover{
-    background: #7762b6 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Psychic{
-    background: #f61c5d url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Psychic:hover{
-    background: #d60945 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Bug{
-    background: #8d9a1b url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Bug:hover{
-    background: #616b13 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Rock{
-    background: #93802d url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Rock:hover{
-    background: #746523 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Ghost{
-    background: #554374 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Ghost:hover{
-    background: #413359 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Dragon{
-    background: #4c08ef url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Dragon:hover{
-    background: #3d07c0 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Dark{
-    background: #513f34 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Dark:hover{
-    background: #362a23 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Fairy{
-background: #FFBAC7 url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Fairy:hover{
-background: #FF87C7 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-Steel{
-    background: #9797ba url(http://i.imgur.com/ee2HfDF.png);
-}
-.movemenu button.type-Steel:hover{
-    background: #7a7aa7 url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button.type-undefined, .movemenu button.type-undefined:hover{
-    background: url(http://i.imgur.com/ee2HfDF.png);
-}
-
-.movemenu button:disabled{
-    background: rgba(0,0,0,0) url(http://i.imgur.com/ee2HfDF.png) !important;
-    opacity: .5;
-}
 
 .userbar:before{
 
