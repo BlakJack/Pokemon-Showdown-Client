@@ -2477,9 +2477,7 @@ border: 2px;
 	-webkit-overflow-scrolling: touch;
 	overflow-scrolling: touch;
 }
-.battle-log{
-  background: url(http://i.imgur.com/fTXBQ98.jpg);
-}
+
 .chat-log-add,
 .battle-log-add{
 background: url(http://www.leviu.ca/images/bg.jpg);
