@@ -5582,8 +5582,12 @@ font-family: Georgia;
 }
 
 .broadcast-omega {
+	border-radius: 50px; 
+-moz-border-radius: 50px; 
+-webkit-border-radius: 50px; 
+border: 3px dashed #5882FA;
+	
 	background-color:#A9D0F5;
-border: 2px solid #fff;#5882FA
 color:black ;
 	padding: 2px 4px;
 }
