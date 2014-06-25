@@ -66,6 +66,14 @@
 					this.set('avatar', data.avatar);
 				}
 			}, this);
+			var self = this;
+			this.on('change:name', function() {
+				if (!self.get('named')) {
+					self.nameRegExp = null;
+				} else {
+					self.nameRegExp = new RegExp('\\b'+Tools.escapeRegExp(self.get('name'))+'\\b', 'i');
+				}
+			});
 		},
 		/**
 		 * Return the path to the login server `action.php` file. AJAX requests
@@ -312,6 +320,50 @@
 				});
 			}
 
+			$(window).on('keydown', function(e) {
+				var el = e.target;
+				var tagName = el.tagName.toUpperCase();
+
+				// keypress happened in an empty textarea or a button
+				var safeLocation = ((tagName === 'TEXTAREA' && !el.value.length) || tagName === 'BUTTON');
+
+				if (app.curSideRoom && $(e.target).closest(app.curSideRoom.$el).length) {
+					// keypress happened in sideroom
+					if (e.keyCode === 37 && safeLocation || window.nodewebkit && e.ctrlKey && e.shiftKey && e.keyCode === 9) {
+						// Left or Ctrl+Shift+Tab on desktop client
+						if (app.topbar.curSideRoomLeft) {
+							e.preventDefault();
+							e.stopImmediatePropagation();
+							app.focusRoom(app.topbar.curSideRoomLeft);
+						}
+					} else if (e.keyCode === 39 && safeLocation || window.nodewebkit && e.ctrlKey && e.keyCode === 9) {
+						// Right or Ctrl+Tab on desktop client
+						if (app.topbar.curSideRoomRight) {
+							e.preventDefault();
+							e.stopImmediatePropagation();
+							app.focusRoom(app.topbar.curSideRoomRight);
+						}
+					}
+					return;
+				}
+				// keypress happened outside of sideroom
+				if (e.keyCode === 37 && safeLocation || window.nodewebkit && e.ctrlKey && e.shiftKey && e.keyCode === 9) {
+					// Left or Ctrl+Shift+Tab on desktop client
+					if (app.topbar.curRoomLeft) {
+						e.preventDefault();
+						e.stopImmediatePropagation();
+						app.focusRoom(app.topbar.curRoomLeft);
+					}
+				} else if (e.keyCode === 39 && safeLocation || window.nodewebkit && e.ctrlKey && e.keyCode === 9) {
+					// Right or Ctrl+Tab on desktop client
+					if (app.topbar.curRoomRight) {
+						e.preventDefault();
+						e.stopImmediatePropagation();
+						app.focusRoom(app.topbar.curRoomRight);
+					}
+				}
+			});
+
 			this.initializeConnection();
 
 			Backbone.history.start({pushState: true});
@@ -557,8 +609,8 @@
 
 			this.socket.onopen = function() {
 				socketopened = true;
-				if (altport && window._gaq) {
-					_gaq.push(['_trackEvent', 'Alt port connection', Config.server.id]);
+				if (altport && window.ga) {
+					ga('send', 'event', 'Alt port connection', Config.server.id);
 				}
 				self.trigger('init:socketopened');
 
@@ -623,7 +675,7 @@
 				// Just open the main menu.
 				fragment = '';
 			}
-			if (!fragment) fragment = '';
+			fragment = toRoomid(fragment || '');
 			if (this.initialFragment === undefined) this.initialFragment = fragment;
 			this.tryJoinRoom(fragment);
 		},
@@ -1069,7 +1121,10 @@
 		focusRoom: function(id) {
 			var room = this.rooms[id];
 			if (!room) return false;
-			if (this.curRoom === room || this.curSideRoom === room) return true;
+			if (this.curRoom === room || this.curSideRoom === room) {
+				room.focus();
+				return true;
+			}
 
 			this.updateSideRoom(id);
 			this.updateLayout();
@@ -1083,6 +1138,7 @@
 				if (this.curRoom.id === id) this.navigate(id);
 			}
 
+			room.focus();
 			return;
 		},
 		updateLayout: function() {
@@ -1352,6 +1408,14 @@
 			buf += '</ul>';
 			var atLeastOne = false;
 			var sideBuf = '';
+
+			this.curRoomLeft = '';
+			this.curRoomRight = '';
+			this.curSideRoomLeft = '';
+			this.curSideRoomRight = '';
+			var passedCurRoom = false;
+			var passedCurSideRoom = false;
+
 			for (var id in app.rooms) {
 				if (!id || id === 'teambuilder' || id === 'ladder') continue;
 				var room = app.rooms[id];
@@ -1373,7 +1437,28 @@
 					name = '<i class="text">'+formatid+'</i><span>'+name+'</span>';
 				}
 				if (room.isSideRoom) {
-					if (id !== 'rooms') sideBuf += '<li><a class="button'+(curId===id||curSideId===id?' cur':'')+(room.notifications?' notifying':'')+' closable" href="'+app.root+id+'">'+name+'</a><a class="closebutton" href="'+app.root+id+'"><i class="icon-remove-sign"></i></a></li>';
+					if (id !== 'rooms') {
+						sideBuf += '<li><a class="button'+(curId===id||curSideId===id?' cur':'')+(room.notifications?' notifying':'')+' closable" href="'+app.root+id+'">'+name+'</a><a class="closebutton" href="'+app.root+id+'"><i class="icon-remove-sign"></i></a></li>';
+						if (curSideId) {
+							// get left/right for side rooms
+							if (curSideId === id) {
+								passedCurSideRoom = true;
+							} else if (!passedCurSideRoom) {
+								this.curSideRoomLeft = id;
+							} else if (!this.curSideRoomRight) {
+								this.curSideRoomRight = id;
+							}
+						} else {
+							// get left/right
+							if (curId === id) {
+								passedCurRoom = true;
+							} else if (!passedCurRoom) {
+								this.curRoomLeft = id;
+							} else if (!this.curRoomRight) {
+								this.curRoomRight = id;
+							}
+						}
+					}
 					continue;
 				}
 				if (!atLeastOne) {
@@ -1381,6 +1466,17 @@
 					atLeastOne = true;
 				}
 				buf += '<li><a class="button'+(curId===id?' cur':'')+(room.notifications?' notifying':'')+' closable" href="'+app.root+id+'">'+name+'</a><a class="closebutton" href="'+app.root+id+'"><i class="icon-remove-sign"></i></a></li>';
+				// get left/right
+				if (curId === id) {
+					passedCurRoom = true;
+				} else if (!passedCurRoom) {
+					this.curRoomLeft = id;
+				} else if (!this.curRoomRight) {
+					this.curRoomRight = id;
+				}
+				if (curSideId && $('body').width() < room.minWidth + app.curSideRoom.minWidth) {
+					this.curSideRoomLeft = id;
+				}
 			}
 			if (app.supportsRooms) {
 				sideBuf += '<li><a class="button'+(curId==='rooms'||curSideId==='rooms'?' cur':'')+'" href="'+app.root+'rooms"><i class="icon-plus" style="margin:7px auto -6px auto"></i> <span>&nbsp;</span></a></li>';
@@ -1498,7 +1594,6 @@
 			}
 			this.$el.show();
 			this.dismissNotification();
-			this.focus();
 		},
 		hide: function() {
 			this.blur();
@@ -2138,6 +2233,7 @@
 			'change select[name=timestamps-lobby]': 'setTimestampsLobby',
 			'change select[name=timestamps-pms]': 'setTimestampsPMs',
 			'change input[name=logchat]': 'setLogChat',
+			'change input[name=selfhighlight]': 'setSelfHighlight',
 			'click img': 'avatars'
 		},
 		update: function() {
@@ -2152,6 +2248,7 @@
 			buf += '<p><label class="optlabel">Background: <select name="bg"><option value="">Charizards</option><option value="#344b6c url(/fx/client-bg-horizon.jpg) no-repeat left center fixed">Horizon</option><option value="#546bac url(/fx/client-bg-3.jpg) no-repeat left center fixed">Waterfall</option><option value="#546bac url(/fx/client-bg-ocean.jpg) no-repeat left center fixed">Ocean</option><option value="#344b6c">Solid blue</option>'+(Tools.prefs('bg')?'<option value="" selected></option>':'')+'</select></label></p>';
 			buf += '<p><label class="optlabel"><input type="checkbox" name="noanim"'+(Tools.prefs('noanim')?' checked':'')+' /> Disable animations</label></p>';
 			buf += '<p><label class="optlabel"><input type="checkbox" name="nolobbypm"'+(Tools.prefs('nolobbypm')?' checked':'')+' /> Don\'t show PMs in lobby chat</label></p>';
+			buf += '<p><label class="optlabel"><input type="checkbox" name="selfhighlight"'+(!Tools.prefs('noselfhighlight')?' checked':'')+'> Highlight when your name is said in chat</label></p>';
 
 			if (window.Notification) {
 				buf += '<p><label class="optlabel"><input type="checkbox" name="temporarynotifications"'+(Tools.prefs('temporarynotifications')?' checked':'')+' /> Temporary notifications</label></p>';
@@ -2207,6 +2304,10 @@
 		setNoanim: function(e) {
 			var noanim = !!e.currentTarget.checked;
 			Tools.prefs('noanim', noanim);
+		},
+		setSelfHighlight: function(e) {
+			var noselfhighlight = !e.currentTarget.checked;
+			Tools.prefs('noselfhighlight', noselfhighlight);
 		},
 		setNolobbypm: function(e) {
 			var nolobbypm = !!e.currentTarget.checked;

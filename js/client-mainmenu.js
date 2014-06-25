@@ -110,7 +110,7 @@
 
 		addPM: function(name, message, target) {
 			var userid = toUserid(name);
-			if (app.ignore[userid] && name.substr(0, 1) === ' ') return;
+			if (app.ignore[userid] && name.substr(0, 1) in {' ':1, '!':1, '‽':1}) return;
 
 			if (app.curSideRoom && app.curSideRoom.addPM && !Tools.prefs('nolobbypm')) {
 				app.curSideRoom.addPM(name, message, target);
@@ -305,7 +305,15 @@
 			} else if (e.keyCode === 27) { // Esc
 				this.closePM(e);
 			} else if (e.keyCode === 9 && !e.shiftKey && !e.ctrlKey) { // Tab key
-				if (app.rooms['lobby'] && app.rooms['lobby'].handleTabComplete($(e.currentTarget))) {
+				var handlerRoom = app.curSideRoom;
+				if (!handlerRoom) {
+					for (var roomid in app.rooms) {
+						if (!app.rooms[roomid].handleTabComplete) continue;
+						handlerRoom = app.rooms[roomid];
+						break;
+					}
+				}
+				if (handlerRoom && handlerRoom.handleTabComplete && handlerRoom.handleTabComplete($(e.currentTarget))) {
 					e.preventDefault();
 					e.stopPropagation();
 				}

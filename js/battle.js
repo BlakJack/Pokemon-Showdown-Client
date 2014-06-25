@@ -1193,8 +1193,8 @@ function Battle(frame, logFrame, noPreload) {
 			selfS.x = slot * (selfS.isBackSprite ? -1 : 1) * -50;
 			selfS.y = slot * (selfS.isBackSprite ? -1 : 1) * 10;
 			selfS.statbarOffset = 0;
-			if (!selfS.isBackSprite && slot == 1) selfS.statbarOffset = 17;
-			if (selfS.isBackSprite && slot == 1) selfS.statbarOffset = -7;
+			if (!selfS.isBackSprite) selfS.statbarOffset = 17 * slot;
+			if (selfS.isBackSprite) selfS.statbarOffset = -7 * slot;
 
 			// make sure element is in the right z-order
 			if (!slot && selfS.isBackSprite || slot && !selfS.isBackSprite) {
@@ -1268,8 +1268,8 @@ function Battle(frame, logFrame, noPreload) {
 			selfS.x = slot * (selfS.isBackSprite ? -1 : 1) * -50;
 			selfS.y = slot * (selfS.isBackSprite ? -1 : 1) * 10;
 			selfS.statbarOffset = 0;
-			if (!selfS.isBackSprite && slot == 1) selfS.statbarOffset = 17;
-			if (selfS.isBackSprite && slot == 1) selfS.statbarOffset = -7;
+			if (!selfS.isBackSprite) selfS.statbarOffset = 17 * slot;
+			if (selfS.isBackSprite) selfS.statbarOffset = -7 * slot;
 
 			// make sure element is in the right z-order
 			if (!slot && selfS.isBackSprite || slot && !selfS.isBackSprite) {
@@ -2070,7 +2070,66 @@ function Battle(frame, logFrame, noPreload) {
 			});
 			//pokemon.statbarElem.done(pokemon.statbarElem.remove());
 		};
-		this.swap = function (pokemon, target, kwargs) {
+		this.swapTo = function (pokemon, slot, kwargs) {
+			if (pokemon.slot === slot) return;
+			var target = selfS.active[slot];
+
+			if (target && !kwargs.silent) {
+				var fromeffect = Tools.getEffect(kwargs.from);
+				switch (fromeffect.id) {
+					case 'allyswitch':		
+						self.message('<small>' + pokemon.getName() + ' and ' + target.getLowerName() + ' switched places.</small>');
+						break;
+					default:
+						self.message('<small>' + pokemon.getName() + ' and ' + target.getLowerName() + ' switched places.</small>');
+						break;
+				}
+			}
+
+			var oslot = pokemon.slot;
+
+			if (target) target.slot = pokemon.slot;
+			pokemon.slot = slot;
+			selfS.active[slot] = pokemon;
+			selfS.active[oslot] = target;
+
+			pokemon.sprite.animUnsummon(true);
+			if (target) target.sprite.animUnsummon(true);
+
+			pokemon.sprite.animSummon(slot, true);
+			if (target) target.sprite.animSummon(oslot, true);
+
+			if (pokemon.statbarElem) {
+				pokemon.statbarElem.remove();
+			}
+			if (target && target.statbarElem) {
+				target.statbarElem.remove();
+			}
+
+			self.statElem.append(selfS.getStatbarHTML(pokemon));
+			pokemon.statbarElem = self.statElem.children().last();
+			if (target) {
+				self.statElem.append(selfS.getStatbarHTML(target));
+				target.statbarElem = self.statElem.children().last();
+			}
+
+			selfS.updateStatbar(pokemon, true);
+			if (target) selfS.updateStatbar(target, true);
+
+			pokemon.statbarElem.css({
+				display: 'block',
+				left: pokemon.sprite.left - 80,
+				top: pokemon.sprite.top - 73 - pokemon.sprite.statbarOffset,
+				opacity: 1
+			});
+			if (target) target.statbarElem.css({
+				display: 'block',
+				left: target.sprite.left - 80,
+				top: target.sprite.top - 73 - target.sprite.statbarOffset,
+				opacity: 1
+			});
+		};
+		this.swapWith = function (pokemon, target, kwargs) {
 			if (pokemon === target) return;
 
 			if (!kwargs.silent) {
@@ -2163,6 +2222,7 @@ function Battle(frame, logFrame, noPreload) {
 			if (!pokemon) {
 				if (selfS.active[0]) selfS.updateStatbar(selfS.active[0], updatePrevhp, updateHp);
 				if (selfS.active[1]) selfS.updateStatbar(selfS.active[1], updatePrevhp, updateHp);
+				if (selfS.active[2]) selfS.updateStatbar(selfS.active[2], updatePrevhp, updateHp);
 				return;
 			}
 			if (!pokemon || !pokemon.statbarElem) {
@@ -2392,8 +2452,10 @@ function Battle(frame, logFrame, noPreload) {
 
 		if (self.mySide.active[0]) self.mySide.active[0].clearTurnstatuses();
 		if (self.mySide.active[1]) self.mySide.active[1].clearTurnstatuses();
+		if (self.mySide.active[2]) self.mySide.active[2].clearTurnstatuses();
 		if (self.yourSide.active[0]) self.yourSide.active[0].clearTurnstatuses();
 		if (self.yourSide.active[1]) self.yourSide.active[1].clearTurnstatuses();
+		if (self.yourSide.active[2]) self.yourSide.active[2].clearTurnstatuses();
 
 		self.log('<h2>Turn ' + turnnum + '</h2>');
 
@@ -3722,6 +3784,9 @@ function Battle(frame, logFrame, noPreload) {
 				if (kwargs.silent) {
 					// do nothing
 				} else switch (effect.id) {
+				case 'mummy':
+					actions += "" + poke.getName() + "\'s Ability " + ability.name + " was suppressed!";
+					break;
 				default:
 					actions += "" + poke.getName() + "\'s Ability was suppressed!";
 					break;
@@ -4361,13 +4426,13 @@ function Battle(frame, logFrame, noPreload) {
 					actions += 'The Lucky Chant shielded ' + side.getLowerTeamName() + ' from critical hits!';
 					break;
 				case 'firepledge':
-					actions += "A rainbow appeared in the sky on " + side.getLowerTeamName() + "'s side!";
+					actions += "A sea of fire enveloped " + side.getLowerTeamName() + "!";
 					break;
 				case 'waterpledge':
-					actions += "A swamp enveloped " + side.getLowerTeamName() + "!";
+					actions += "A rainbow appeared in the sky on " + side.getLowerTeamName() + "'s side!";
 					break;
 				case 'grasspledge':
-					actions += "A sea of fire enveloped " + side.getLowerTeamName() + "!";
+					actions += "A swamp enveloped " + side.getLowerTeamName() + "!";
 					break;
 				default:
 					actions += "" + effect.name + " started!";
@@ -4413,13 +4478,13 @@ function Battle(frame, logFrame, noPreload) {
 					actions += "" + side.getTeamName() + "'s Lucky Chant wore off!";
 					break;
 				case 'firepledge':
-					actions += "The rainbow on " + side.getLowerTeamName() + "'s side disappeared!";
+					actions += "The sea of fire around " + side.getLowerTeamName() + " disappeared!";
 					break;
 				case 'waterpledge':
-					actions += "The swamp around " + side.getLowerTeamName() + " disappeared!";
+					actions += "The rainbow on " + side.getLowerTeamName() + "'s side disappeared!";
 					break;
 				case 'grasspledge':
-					actions += "The sea of fire around " + side.getLowerTeamName() + " disappeared!";
+					actions += "The swamp around " + side.getLowerTeamName() + " disappeared!";
 					break;
 				default:
 					actions += "" + effect.name + " ended!";
@@ -4974,6 +5039,34 @@ function Battle(frame, logFrame, noPreload) {
 		case 'poke':
 			self.getPokemon('new: '+args[1], args[2]);
 			break;
+		case 'detailschange':
+			if (self.waitForResult()) return;
+			var poke = self.getPokemon(args[1]);
+			poke.removeVolatile('formechange');
+			poke.removeVolatile('typechange');
+
+			var newSpecies;
+			var commaIndex = args[2].indexOf(',');
+			if (commaIndex === -1) {
+				newSpecies = args[2];
+			} else {
+				newSpecies = args[2].substr(0, commaIndex);
+			}
+			var template = Tools.getTemplate(newSpecies);
+			if (poke.sprite.sp.shiny) template.shiny = true;
+			poke.sprite.animTransform(template);
+			poke.sprite.oldsp = null;
+			poke.spriteid = template.spriteid;
+			poke.side.updateStatbar();
+
+			poke.species = newSpecies;
+			poke.ability = poke.baseAbility = (template.abilities ? template.abilities['0'] : '');
+			poke.types = template.types && template.types.slice(0);
+
+			poke.details = args[2];
+			poke.searchid = args[1].substr(0, 2) + args[1].substr(3) + '|' + args[2];
+			poke.side.updateSidebar();
+			break;
 		case 'teampreview':
 			self.teamPreview(true);
 			self.teamPreviewCount = args[1];
@@ -5005,8 +5098,13 @@ function Battle(frame, logFrame, noPreload) {
 			poke.side.faint(poke);
 			break;
 		case 'swap':
-			var poke = self.getPokemon('other: ' + args[1]);
-			poke.side.swap(poke, self.getPokemon('other: ' + args[2]), kwargs);
+			if (isNaN(Number(args[2]))) {
+				var poke = self.getPokemon('other: ' + args[1]);
+				poke.side.swapWith(poke, self.getPokemon('other: ' + args[2]), kwargs);
+			} else {
+				var poke = self.getPokemon(args[1]);
+				poke.side.swapTo(poke, args[2], kwargs);
+			}
 			break;
 		case 'move':
 			self.endLastTurn();

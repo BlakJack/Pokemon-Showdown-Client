@@ -333,7 +333,10 @@ var Tools = {
 			if (linkclass) {
 				classbit = ' class="message-link-' + toId(linkclass) + '"';
 			}
-			str = str.replace(/(https?\:\/\/[a-z0-9-.]+(\:[0-9]+)?(\/([^\s]*[^\s?.,])?)?|[a-z0-9]([a-z0-9-\.]*[a-z0-9])?\.(com|org|net|edu|us)(\:[0-9]+)?((\/([^\s]*[^\s?.,])?)?|\b))/ig, function(uri) {
+			str = str.replace(/(https?\:\/\/[a-z0-9-.]+(\:[0-9]+)?(\/([^\s]*[^\s?.,])?)?|[a-z0-9.]+\@[a-z0-9.]+\.[a-z0-9]{2,3}|([a-z0-9]([a-z0-9-\.]*[a-z0-9])?\.(com|org|net|edu|us)(\:[0-9]+)?|qmark\.tk|hisouten\.koumakan\.jp)((\/([^\s]*[^\s?.,])?)?|\b))/ig, function(uri) {
+				if (/[a-z0-9.]+\@[a-z0-9.]+\.[a-z0-9]{2,3}/ig.test(uri)) {
+					return '<a href="mailto:'+uri+'" target="_blank"'+classbit+'>'+uri+'</u>';
+				}
 				// Insert http:// before URIs without a URI scheme specified.
 				var fulluri = uri.replace(/^([a-z]*[^a-z:])/g, 'http://$1');
 				var onclick;
@@ -353,8 +356,8 @@ var Tools = {
 								Tools.unescapeHTML(fulluri)
 						));
 					}
-					onclick = 'if (window._gaq) _gaq.push([\'_trackEvent\', \'' +
-							event + '\', \'' + Tools.escapeQuotes(fulluri) + '\']);';
+					onclick = 'if (window.ga) ga(\'send\', \'event\', \'' +
+							event + '\', \'' + Tools.escapeQuotes(fulluri) + '\');';
 				}
 				return '<a href="' + fulluri +
 					'" target="_blank" onclick="' + onclick + '"' + classbit +
@@ -392,7 +395,7 @@ var Tools = {
 			});
 		}
 		// __italics__
-		str = str.replace(/\_\_([^< ]([^<]*?[^< ])?)\_\_/g,
+		str = str.replace(/\_\_([^< ]([^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g,
 				options.hideitalics ? '$1' : '<i>$1</i>');
 		// **bold**
 		str = str.replace(/\*\*([^< ]([^<]*?[^< ])?)\*\*/g,
@@ -423,6 +426,10 @@ var Tools = {
 		str = (str?''+str:'');
 		return str.replace(/&quot;/g, '"').replace(/&gt;/g, '>').
 			replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+	},
+
+	escapeRegExp: function(str) {
+		return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 	},
 
 	escapeQuotes: function(str) {
@@ -705,6 +712,7 @@ var Tools = {
 			if (window.BattleFormatsData && window.BattleFormatsData[id]) {
 				template.tier = window.BattleFormatsData[id].tier;
 				template.isNonstandard = window.BattleFormatsData[id].isNonstandard;
+				template.unreleasedHidden = window.BattleFormatsData[id].unreleasedHidden;
 			}
 			if (window.BattleLearnsets && window.BattleLearnsets[id]) {
 				template.learnset = window.BattleLearnsets[id].learnset;
@@ -769,56 +777,67 @@ var Tools = {
 
 	getSpriteData: function(pokemon, siden, options) {
 		pokemon = Tools.getTemplate(pokemon);
-		var isBack = !siden;
-		var back = (siden?'':'-back');
-		var facing = (siden?'front':'back');
-		var cryurl = '';
-		var spriteid = pokemon.spriteid;
-		if (window.BattlePokemonSprites && BattlePokemonSprites[pokemon.speciesid]) {
-			var num = '' + BattlePokemonSprites[pokemon.speciesid].num;
-			if (num.length < 3) num = '0' + num;
-			if (num.length < 3) num = '0' + num;
-			cryurl = 'audio/cries/' + num + '.wav';
+		var spriteData = {
+			w: 96,
+			h: 96,
+			url: Tools.resourcePrefix + 'sprites/',
+			isBackSprite: false,
+			cryurl: '',
+			shiny: pokemon.shiny
+		};
+		var name = pokemon.spriteid;
+		var dir, isBack, facing;
+		if (siden) {
+			dir = '';
+			facing = 'front';
+		} else {
+			spriteData.isBackSprite = true;
+			dir = '-back';
+			facing = 'back';
 		}
 
-		if (pokemon.shiny) back += '-shiny';
+		var animationData = window.BattlePokemonSprites && BattlePokemonSprites[pokemon.speciesid];
+		if (animationData) {
+			var num = '' + animationData.num;
+			if (num.length < 3) num = '0' + num;
+			if (num.length < 3) num = '0' + num;
+			spriteData.cryurl = 'audio/cries/' + num + '.wav';
+		}
+
+		if (pokemon.shiny) dir += '-shiny';
 
 		// April Fool's 2014
 		if (window.Config && Config.server && Config.server.afd || options && options.afd) {
-			return {
-				w: 96,
-				h: 96,
-				url: Tools.resourcePrefix + 'sprites/afd'+back+'/' + spriteid + '.png',
-				cryurl: cryurl,
-				isBackSprite: isBack
-			};
+			dir = 'afd' + dir;
+			spriteData.url += dir + '/' + name + '.png';
+			return spriteData;
 		}
 
-		if (!Tools.prefs('noanim') && window.BattlePokemonSprites && BattlePokemonSprites[pokemon.speciesid] && BattlePokemonSprites[pokemon.speciesid][facing]) {
-			var url = Tools.resourcePrefix + 'sprites/xyani'+back;
-			url += '/'+spriteid;
-			var spriteType = 'ani';
-			if (BattlePokemonSprites[pokemon.speciesid][facing]['anif'] && pokemon.gender === 'F') {
-				url += '-f';
-				spriteType = 'anif';
+		var gen = 'xy';
+
+		if (animationData && animationData[facing]) {
+			var spriteType = '';
+			if (animationData[facing]['anif'] && pokemon.gender === 'F') {
+				name += '-f';
+				spriteType += 'f';
 			}
-			url += '.gif';
-			return {
-				w: BattlePokemonSprites[pokemon.speciesid][facing][spriteType].w,
-				h: BattlePokemonSprites[pokemon.speciesid][facing][spriteType].h,
-				url: url,
-				cryurl: cryurl,
-				isBackSprite: isBack,
-				shiny: pokemon.shiny
-			};
+			if (!Tools.prefs('noanim')) {
+				spriteType = 'ani' + spriteType;
+				dir = gen + 'ani' + dir;
+
+				spriteData.w = animationData[facing][spriteType].w;
+				spriteData.h = animationData[facing][spriteType].h;
+				spriteData.url += dir + '/' + name + '.gif';
+				return spriteData;
+			}
 		}
-		return {
-			w: 96,
-			h: 96,
-			url: Tools.resourcePrefix + 'sprites/bw'+back+'/' + spriteid + '.png',
-			cryurl: cryurl,
-			isBackSprite: isBack
-		};
+		// if there is no entry or enough data in pokedex-mini.js or the animations are disabled, use BW static sprites
+		gen = 'bw';
+		dir = gen + dir;
+
+		spriteData.url += dir+'/' + name + '.png';
+
+		return spriteData;
 	},
 
 	getIcon: function(pokemon) {
@@ -860,12 +879,43 @@ var Tools = {
 			"castformsunny": 762,
 			"meloettapirouette": 804,
 			"meowsticf": 809,
+			"floetteeternalflower": 810,
 			"tornadustherian": 816,
 			"thundurustherian": 817,
 			"landorustherian": 818,
 			"kyuremblack": 819,
 			"kyuremwhite": 820,
 			"keldeoresolute": 821,
+			"venusaurmega": 864,
+			"charizardmegax": 865,
+			"charizardmegay": 866,
+			"blastoisemega": 867,
+			"alakazammega": 868,
+			"gengarmega": 869,
+			"kangaskhanmega": 870,
+			"pinsirmega": 871,
+			"gyaradosmega": 872,
+			"aerodactylmega": 873,
+			"mewtwomegax": 874,
+			"mewtwomegay": 875,
+			"ampharosmega": 876,
+			"scizormega": 877,
+			"heracrossmega": 878,
+			"houndoommega": 879,
+			"tyranitarmega": 880,
+			"blazikenmega": 881,
+			"gardevoirmega": 882,
+			"mawilemega": 883,
+			"aggronmega": 884,
+			"medichammega": 885,
+			"manectricmega": 886,
+			"banettemega": 887,
+			"absolmega": 888,
+			"garchompmega": 889,
+			"lucariomega": 890,
+			"abomasnowmega": 891,
+			"latiasmega": 892,
+			"latiosmega": 893,
 			"syclant": 832+0,
 			"revenankh": 832+1,
 			"pyroak": 832+2,
@@ -883,6 +933,7 @@ var Tools = {
 			"aurumoth": 832+14,
 			"malaconda": 832+15,
 			"cawmodore": 832+16,
+			"volkraken": 832+17,
 		};
 		if (altNums[id]) {
 			num = altNums[id];

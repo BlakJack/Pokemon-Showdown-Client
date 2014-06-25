@@ -46,7 +46,11 @@
 		},
 
 		focus: function() {
-			if (this.$chatbox) this.$chatbox.focus();
+			if (this.$chatbox) {
+				this.$chatbox.focus();
+			} else {
+				this.$('button[name=login]').focus();
+			}
 		},
 
 		login: function() {
@@ -226,6 +230,9 @@
 					// it will prevent the initialisation from completing.
 					return false;
 				}
+			}
+			if (!Tools.prefs('noselfhighlight') && app.user.nameRegExp) {
+				if (app.user.nameRegExp.test(message)) return true;
 			}
 			return ((highlights.length > 0) && app.highlightRegExp.test(message));
 		},
@@ -570,8 +577,10 @@
 									buffer += '<td>'+Math.round(40.0*parseFloat(row.gxe)*Math.pow(2.0,-43.0/N),0)+'</td>';
 								} else if (row.formatid === 'oususpecttest') {
 									buffer += '<td>'+Math.round(40.0*parseFloat(row.gxe)*Math.pow(2.0,-17.0/N),0)+'</td>';
-								} else if (row.formatid === 'smogondoubles' || row.formatid === 'smogondoublessuspecttest') {
+								} else if (row.formatid === 'smogondoublescurrent' || row.formatid === 'smogondoublessuspecttest') {
 									buffer += '<td>'+Math.round(40.0*parseFloat(row.gxe)*Math.pow(2.0,-15.0/N),0)+'</td>';
+								} else if (row.formatid === 'rususpecttest') {
+									buffer += '<td>'+Math.round(40.0*parseFloat(row.gxe)*Math.pow(2.0,-20.0/N),0)+'</td>';
 								} else {
 									buffer += '<td>--</td>';
 								}
@@ -987,9 +996,10 @@
 				'leave': []
 			};
 			var clickableName = '<span class="username" data-name="' + Tools.escapeHTML(name) + '">' + Tools.escapeHTML(name.substr(1)) + '</span>';
-			if (!pm) {
+			var isHighlighted = false;
+			if (!pm && userid !== app.user.get('userid')) {
 				// PMs already notify in the main menu; no need to make them notify again
-				var isHighlighted = this.getHighlight(message);
+				isHighlighted = this.getHighlight(message);
 				if (isHighlighted) {
 					var notifyTitle = "Mentioned by "+name+(this.id === 'lobby' ? '' : " in "+this.title);
 					this.notifyOnce(notifyTitle, "\""+message+"\"", 'highlight');
@@ -1100,8 +1110,8 @@
 			this.$el.html(buf);
 		},
 		ranks: {
-			'#': 2,
 			'~': 2,
+			'#': 2,
 			'&': 2,
 			'@': 1,
 			'%': 1,
@@ -1112,8 +1122,8 @@
 			'‽': 0
 		},
 		rankOrder: {
-			'#': 1,
-			'~': 2,
+			'~': 1,
+			'#': 2,
 			'&': 3,
 			'@': 4,
 			'%': 5,
