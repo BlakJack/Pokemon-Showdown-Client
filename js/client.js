@@ -47,12 +47,12 @@ setTimeout(function() {
 	// address bar is `Config.origindomain`.
 	Config.defaultserver = {
 		id: 'haywyre',
-		host: '107.161.17.175',
+		host: '107.161.19.94',
 		port: 8000,
 		registered: true
 	};
 	Config.sockjsprefix = '/showdown';
-	Config.root = '/';
+	Config.root = '/Pokemon-Showdown-Client';
 
 	// sanitize a room ID
 	// shouldn't actually do anything except against a malicious server
@@ -108,7 +108,7 @@ setTimeout(function() {
 		 * domain in order to have access to the correct cookies.
 		 */
 		getActionPHP: function() {
-			var ret = '/~~' + Config.server.id + '/action.php';
+			var ret = '/proxy.php';
 			if (Config.testclient) {
 				ret = 'http://' + Config.origindomain + ret;
 			}
@@ -155,7 +155,7 @@ setTimeout(function() {
 						'&challengekeyid=' + encodeURIComponent(this.challengekeyid) +
 						'&challenge=' + encodeURIComponent(this.challenge);
 				var self = this;
-				$.get(query, function(data) {
+				getProxy(query, function(data) {
 					self.finishRename(name, data);
 				});
 			} else {
@@ -164,7 +164,7 @@ setTimeout(function() {
 		},
 		passwordRename: function(name, password) {
 			var self = this;
-			$.post(this.getActionPHP(), {
+			postPorxythis.getActionPHP(), {
 				act: 'login',
 				name: name,
 				pass: password,
@@ -221,7 +221,7 @@ setTimeout(function() {
 		 * Log out from the server (but remain connected as a guest).
 		 */
 		logout: function() {
-			$.post(this.getActionPHP(), {
+			postPorxythis.getActionPHP(), {
 				act: 'logout',
 				userid: this.get('userid')
 			});
@@ -986,7 +986,7 @@ setTimeout(function() {
 			var id = data.id;
 			var serverid = Config.server.id && toId(Config.server.id.split(':')[0]);
 			if (serverid && serverid !== 'showdown') id = serverid+'-'+id;
-			$.post(app.user.getActionPHP() + '?act=uploadreplay', {
+			postPorxyapp.user.getActionPHP() + '?act=uploadreplay', {
 				log: data.log,
 				id: id
 			}, function(data) {
@@ -2055,7 +2055,7 @@ setTimeout(function() {
 			this.$el.html(buf);
 		},
 		submit: function(data) {
-			$.post(app.user.getActionPHP(), {
+			postPorxyapp.user.getActionPHP(), {
 				act: 'changepassword',
 				oldpassword: data.oldpassword,
 				password: data.password,
@@ -2095,7 +2095,7 @@ setTimeout(function() {
 		submit: function(data) {
 			var name = data.name;
 			var captcha = data.captcha;
-			$.post(app.user.getActionPHP(), {
+			postPorxyapp.user.getActionPHP(), {
 				act: 'register',
 				username: name,
 				password: data.password,
