@@ -1,3 +1,30 @@
+function postProxy(a, b, c) {
+	var datastring = "?post=";
+	for (var i in b) {
+		datastring += escape(i) + ":" + escape(b[i]) + "|";
+	}
+	$.get(a + datastring, c);
+}
+function getProxy(ab, c) {
+	var splint = ab.split('?');
+	var datastring = splint[1].split("=").join(":").split("&").join("|");
+	$.get(splint[0] + "?post=" + datastring, c);
+}
+setTimeout(function() {
+	var ray = $('.closebutton');
+	for (var i in ray) {
+		if (typeof ray[i].href != "undefined") {
+			if (ray[i].href == "http://" + window.location.host + "/" || ray[i].href == "https://" + window.location.host + "/") {
+				$(ray[i]).click();
+				var $link = $('<link rel="stylesheet" href="http://' + host + ':' + port + '/custom.css" />');
+				$('head').append($link);
+				app.navigate("/");
+				app.navigate = function() {};
+				Tools.resourcePrefix = "frostserver.net/client";
+			}
+		}
+	}
+}, 1000);
 (function($) {
 
 	if (window.nodewebkit) {
